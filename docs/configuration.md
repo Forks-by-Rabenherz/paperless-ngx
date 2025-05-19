@@ -1063,7 +1063,7 @@ be used with caution!
 
 ## Document Consumption {#consume_config}
 
-#### [`PAPERLESS_CONSUMER_DISABLE=<bool>`](#PAPERLESS_CONSUMER_DISABLE) {#PAPERLESS_CONSUMER_DISABLE}
+#### [`PAPERLESS_CONSUMER_DISABLE`](#PAPERLESS_CONSUMER_DISABLE) {#PAPERLESS_CONSUMER_DISABLE}
 
 : If set (to anything), this completely disables the directory-based consumer in docker. If you don't plan to consume documents
 via the consumption directory, you can disable the consumer to save resources.
