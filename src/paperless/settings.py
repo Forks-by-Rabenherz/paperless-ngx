@@ -13,7 +13,6 @@ from typing import Final
 from urllib.parse import urlparse
 
 from celery.schedules import crontab
-from concurrent_log_handler.queue import setup_logging_queues
 from dateparser.languages.loader import LocaleDataLoader
 from django.utils.translation import gettext_lazy as _
 from dotenv import load_dotenv
@@ -793,6 +792,7 @@ LANGUAGES = [
     ("sv-se", _("Swedish")),
     ("tr-tr", _("Turkish")),
     ("uk-ua", _("Ukrainian")),
+    ("vi-vn", _("Vietnamese")),
     ("zh-cn", _("Chinese Simplified")),
     ("zh-tw", _("Chinese Traditional")),
 ]
@@ -810,8 +810,6 @@ USE_TZ = True
 ###############################################################################
 # Logging                                                                     #
 ###############################################################################
-
-setup_logging_queues()
 
 LOGGING_DIR.mkdir(parents=True, exist_ok=True)
 
