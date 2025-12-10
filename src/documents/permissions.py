@@ -63,8 +63,9 @@ def get_groups_with_only_permission(obj, codename):
 
 def set_permissions_for_object(permissions: dict, object, *, merge: bool = False):
     """
-    Set permissions for an object. The permissions are given as a list of strings
-    in the format "action_modelname", e.g. "view_document".
+    Set permissions for an object. The permissions are given as a mapping of actions
+    to a dict of user / group id lists, e.g.
+    {"view": {"users": [1], "groups": [2]}, "change": {"users": [], "groups": []}}.
 
     If merge is True, the permissions are merged with the existing permissions and
     no users or groups are removed. If False, the permissions are set to exactly
