@@ -170,11 +170,18 @@ Available options are `postgresql` and `mariadb`.
 
     !!! note
 
-        A small pool is typically sufficient — for example, a size of 4.
-        Make sure your PostgreSQL server's max_connections setting is large enough to handle:
-        ```(Paperless workers + Celery workers) × pool size + safety margin```
-        For example, with 4 Paperless workers and 2 Celery workers, and a pool size of 4:
-        (4 + 2) × 4 + 10 = 34 connections required.
+        A pool of 8-10 connections per worker is typically sufficient.
+        If you encounter error messages such as `couldn't get a connection`
+        or database connection timeouts, you probably need to increase the pool size.
+
+    !!! warning
+        Make sure your PostgreSQL `max_connections` setting is large enough to handle the connection pools:
+        `(NB_PAPERLESS_WORKERS + NB_CELERY_WORKERS) × POOL_SIZE + SAFETY_MARGIN`. For example, with
+        4 Paperless workers and 2 Celery workers, and a pool size of 8:``(4 + 2) × 8 + 10 = 58`,
+        so `max_connections = 60` (or even more) is appropriate.
+
+        This assumes only Paperless-ngx connects to your PostgreSQL instance. If you have other applications,
+        you should increase `max_connections` accordingly.
 
 #### [`PAPERLESS_DB_READ_CACHE_ENABLED=<bool>`](#PAPERLESS_DB_READ_CACHE_ENABLED) {#PAPERLESS_DB_READ_CACHE_ENABLED}
 
@@ -1824,3 +1831,67 @@ password. All of these options come from their similarly-named [Django settings]
 : The endpoint to use for the remote OCR engine. This is required for Azure AI.
 
     Defaults to None.
+
+## AI {#ai}
+
+#### [`PAPERLESS_AI_ENABLED=<bool>`](#PAPERLESS_AI_ENABLED) {#PAPERLESS_AI_ENABLED}
+
+: Enables the AI features in Paperless. This includes the AI-based
+suggestions. This setting is required to be set to true in order to use the AI features.
+
+    Defaults to false.
+
+#### [`PAPERLESS_AI_LLM_EMBEDDING_BACKEND=<str>`](#PAPERLESS_AI_LLM_EMBEDDING_BACKEND) {#PAPERLESS_AI_LLM_EMBEDDING_BACKEND}
+
+: The embedding backend to use for RAG. This can be either "openai" or "huggingface".
+
+    Defaults to None.
+
+#### [`PAPERLESS_AI_LLM_EMBEDDING_MODEL=<str>`](#PAPERLESS_AI_LLM_EMBEDDING_MODEL) {#PAPERLESS_AI_LLM_EMBEDDING_MODEL}
+
+: The model to use for the embedding backend for RAG. This can be set to any of the embedding models supported by the current embedding backend. If not supplied, defaults to "text-embedding-3-small" for OpenAI and "sentence-transformers/all-MiniLM-L6-v2" for Huggingface.
+
+    Defaults to None.
+
+#### [`PAPERLESS_AI_LLM_BACKEND=<str>`](#PAPERLESS_AI_LLM_BACKEND) {#PAPERLESS_AI_LLM_BACKEND}
+
+: The AI backend to use. This can be either "openai" or "ollama". If set to "ollama", the AI
+features will be run locally on your machine. If set to "openai", the AI features will be run
+using the OpenAI API. This setting is required to be set to use the AI features.
+
+    Defaults to None.
+
+    !!! note
+
+        The OpenAI API is a paid service. You will need to set up an OpenAI account and
+        will be charged for usage incurred by Paperless-ngx features and your document data
+        will (of course) be sent to the OpenAI API. Paperless-ngx does not endorse the use of the
+        OpenAI API in any way.
+
+        Refer to the OpenAI terms of service, and use at your own risk.
+
+#### [`PAPERLESS_AI_LLM_MODEL=<str>`](#PAPERLESS_AI_LLM_MODEL) {#PAPERLESS_AI_LLM_MODEL}
+
+: The model to use for the AI backend, i.e. "gpt-3.5-turbo", "gpt-4" or any of the models supported by the
+current backend. If not supplied, defaults to "gpt-3.5-turbo" for OpenAI and "llama3" for Ollama.
+
+    Defaults to None.
+
+#### [`PAPERLESS_AI_LLM_API_KEY=<str>`](#PAPERLESS_AI_LLM_API_KEY) {#PAPERLESS_AI_LLM_API_KEY}
+
+: The API key to use for the AI backend. This is required for the OpenAI backend (optional for others).
+
+    Defaults to None.
+
+#### [`PAPERLESS_AI_LLM_ENDPOINT=<str>`](#PAPERLESS_AI_LLM_ENDPOINT) {#PAPERLESS_AI_LLM_ENDPOINT}
+
+: The endpoint / url to use for the AI backend. This is required for the Ollama backend (optional for others).
+
+    Defaults to None.
+
+#### [`PAPERLESS_AI_LLM_INDEX_TASK_CRON=<cron expression>`](#PAPERLESS_AI_LLM_INDEX_TASK_CRON) {#PAPERLESS_AI_LLM_INDEX_TASK_CRON}
+
+: Configures the schedule to update the AI embeddings of text content and metadata for all documents. Only performed if
+AI is enabled and the LLM embedding backend is set.
+
+    Defaults to `10 2 * * *`, once per day.
